@@ -13,6 +13,13 @@ RUN if ! cat /etc/group | grep -e "^pip-global:" > /dev/null 2>&1; then groupadd
     && chown :pip-global ${PIP_TARGET} \
     && ( [ ! -f "/etc/profile.d/00-restore-env.sh" ] || sed -i -e "s/export PATH=/export PATH=\/usr\/local\/pip-global:/" /etc/profile.d/00-restore-env.sh )
 
+# [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
+ARG NODE_VERSION="none"
+RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+
+# Install gulp globally
+RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g gulp" 2>&1
+
 # Install gcloud https://cloud.google.com/sdk/docs/install#deb
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     # Meet the prerequisites
